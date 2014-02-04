@@ -1,6 +1,6 @@
 {
   "name": "soundbank-oscillator",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Oscillator AudioNode source extended with automatable amplitude and midi note params.",
   "main": "index.js",
   "dependencies": {
