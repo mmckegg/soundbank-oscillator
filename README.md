@@ -21,7 +21,11 @@ var Oscillator = require('soundbank-oscillator')
 
 Returns a source AudioNode.
 
-**AudioParams**: frequency, note, detune, amp 
+**AudioParams**: frequency, note (higher notes rolloff amplitude), detune, amp
+
+### source.shape (get/set)
+
+Set the waveform shape of the audio node: 'sine', 'triangle', 'sawtooth', 'square'
 
 ### source.start(at)
 

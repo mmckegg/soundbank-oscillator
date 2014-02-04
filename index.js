@@ -35,6 +35,15 @@ module.exports = function(audioContext){
     }
   })
 
+  Object.defineProperty(node, 'shape', {
+    get: function(){
+      return oscillator.type
+    }, 
+    set: function(value){
+      oscillator.type = value
+    }
+  })
+
   node.start = function(at){
     oscillator.start(at)
   }

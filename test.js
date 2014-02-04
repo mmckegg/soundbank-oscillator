@@ -12,6 +12,14 @@ addSlider(oscillator.detune)
 
 oscillator.start(0)
 
+var shapePicker = document.createElement('select')
+shapePicker.innerHTML = '<option>sine</option><option>triangle</option><option>sawtooth</option><option>square</option>'
+shapePicker.onchange = function(){
+  oscillator.shape = this.value
+}
+document.body.appendChild(shapePicker)
+
+
 function addSlider(param, step, min, max){
   var container = document.createElement('div')
   container.appendChild(document.createTextNode(param.name))
