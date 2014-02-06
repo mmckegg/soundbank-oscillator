@@ -38,7 +38,7 @@ Schedule note stop.
 ## Standalone Example
 
 ```js
-var Oscillator = require('./index')
+var Oscillator = require('soundbank-oscillator')
 
 var audioContext = new webkitAudioContext()
 var oscillator = Oscillator(audioContext)
