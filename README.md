@@ -3,7 +3,7 @@ soundbank-oscillator
 
 Oscillator AudioNode source extended with automatable amplitude and midi note params.
 
-Intended for use as a source in [soundbank](https://github.com/mmckegg/soundbank), but it is compatiable with any old Web Audio API AudioNode set up.
+Intended for use as a source in [soundbank](https://github.com/mmckegg/soundbank), but it is compatible with any Web Audio API AudioNode set up.
 
 ## Install
 
