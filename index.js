@@ -4,22 +4,23 @@ var extendTransform = require('audio-param-transform')
 module.exports = function(audioContext){
   var oscillator = audioContext.createOscillator()
   var gain = audioContext.createGain()
+  var rollOffGain = audioContext.createGain()
 
   extendTransform(oscillator.detune, audioContext)
-  extendTransform(gain.gain, audioContext)
+  extendTransform(rollOffGain.gain, audioContext)
 
-  var ampParam = gain.gain.transform()
-  var ampRolloffParam = gain.gain.transform(noteGainRolloff)
+  var ampRolloffParam = rollOffGain.gain.transform(noteGainRolloff)
 
   var detuneParam = oscillator.detune.transform()
   var noteParam = oscillator.detune.transform(noteToCentOffset)
 
-  oscillator.connect(gain)
+  oscillator.connect(rollOffGain)
+  rollOffGain.connect(gain)
 
   var node = createAudioNode(null, gain, {
     amp: {
       min: 0, defaultValue: 1,
-      target: ampParam
+      target: gain.gain
     },
     note: {
       min: 0, max: 127, defaultValue: 69,
@@ -58,7 +59,7 @@ module.exports = function(audioContext){
 
 function noteGainRolloff(a, b){
   var ampRolloff = (Math.exp((b||0)/127)-1) * 0.5
-  return a - (a * ampRolloff)
+  return 1 - ampRolloff
 }
 
 function noteToCentOffset(a, b){
