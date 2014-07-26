@@ -40,7 +40,7 @@ Schedule note stop.
 ```js
 var Oscillator = require('soundbank-oscillator')
 
-var audioContext = new webkitAudioContext()
+var audioContext = new AudioContext()
 var oscillator = Oscillator(audioContext)
 
 oscillator.note.value = 60 // middle C (midi)

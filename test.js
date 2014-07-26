@@ -1,6 +1,6 @@
 var Oscillator = require('./index')
 
-var audioContext = new webkitAudioContext()
+var audioContext = new AudioContext()
 var oscillator = Oscillator(audioContext)
 
 oscillator.connect(audioContext.destination)
