@@ -78,12 +78,3 @@ function generateRolloff(){
   }
   return result
 }
-
-function noteGainRolloff(a, b){
-  var ampRolloff = (Math.exp((b||0)/127)-1) * 0.5
-  return 1 - ampRolloff
-}
-
-function noteToCentOffset(a, b){
-  return a + (((b||0) - 69) * 100)
-}
