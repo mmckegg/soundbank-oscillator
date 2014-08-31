@@ -79,17 +79,6 @@ function generateRolloff(){
   return result
 }
 
-function log(node){
-  var viewer = node.context.createScriptProcessor(2048, 1)
-  node.connect(viewer)
-  viewer.onaudioprocess = function(e){
-    console.log(e.inputBuffer.getChannelData(0)[0])
-  }
-  window.viewers = window.viewers || []
-  window.viewers.push(viewer)
-  viewer.connect(node.context.destination)
-}
-
 function noteGainRolloff(a, b){
   var ampRolloff = (Math.exp((b||0)/127)-1) * 0.5
   return 1 - ampRolloff
