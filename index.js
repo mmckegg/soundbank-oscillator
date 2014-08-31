@@ -1,40 +1,40 @@
-var createAudioNode = require('custom-audio-node')
-var extendTransform = require('audio-param-transform')
+var AudioVoltage = require('audio-voltage')
+var rolloff = generateRolloff()
 
 module.exports = function(audioContext){
+  var node = audioContext.createGain()
   var oscillator = audioContext.createOscillator()
-  var gain = audioContext.createGain()
-  var rollOffGain = audioContext.createGain()
+  var rolloffGain = audioContext.createGain()
 
-  extendTransform(oscillator.detune, audioContext)
-  extendTransform(rollOffGain.gain, audioContext)
+  oscillator.connect(rolloffGain)
+  rolloffGain.connect(node)
 
-  var ampRolloffParam = rollOffGain.gain.transform(noteGainRolloff)
 
-  var detuneParam = oscillator.detune.transform()
-  var noteParam = oscillator.detune.transform(noteToCentOffset)
+  // note param input
+  var midiVoltage = AudioVoltage(audioContext)
+  midiVoltage.gain.value = 69 // set base note (440hz middle A)
 
-  oscillator.connect(rollOffGain)
-  rollOffGain.connect(gain)
+  // normalize to 0
+  var offset = AudioVoltage(audioContext)
+  offset.gain.value = -69
+  midiVoltage.connect(offset.gain)
 
-  var node = createAudioNode(null, gain, {
-    amp: {
-      min: 0, defaultValue: 1,
-      target: gain.gain
-    },
-    note: {
-      min: 0, max: 127, defaultValue: 69,
-      targets: [ noteParam, ampRolloffParam ]
-    },
-    frequency: {
-      min: 20, max: 20000, defaultValue: 440,
-      target: oscillator.frequency
-    },
-    detune: {
-      min: -200, max: 200, defaultValue: 0,
-      target: detuneParam
-    }
-  })
+  // multiply by 100 and connect to oscillator detune
+  var centMultiplier = audioContext.createGain()
+  centMultiplier.gain.value = 100
+  offset.connect(centMultiplier)
+  centMultiplier.connect(oscillator.detune)
+
+
+  // apply gain rolloff
+  applyRolloff(midiVoltage, rolloffGain.gain)
+
+
+  // export params
+  node.amp = node.gain
+  node.note = midiVoltage.gain
+  node.frequency = oscillator.frequency
+  node.detune = oscillator.detune
 
   Object.defineProperty(node, 'shape', {
     get: function(){
@@ -55,6 +55,39 @@ module.exports = function(audioContext){
   }
 
   return node
+}
+
+function applyRolloff(midiVoltage, target){
+  var audioContext = midiVoltage.context
+  
+  var scale = audioContext.createGain()
+  scale.gain.value = 1/127
+  midiVoltage.connect(scale)
+
+  var shape = audioContext.createWaveShaper()
+  shape.curve = rolloff
+  scale.connect(shape)
+
+  shape.connect(target)
+}
+
+function generateRolloff(){
+  var result = new Float32Array(256)
+  for (var i=0;i<128;i++){
+    result[i+128] = (Math.exp(i/127)-1) * -0.5
+  }
+  return result
+}
+
+function log(node){
+  var viewer = node.context.createScriptProcessor(2048, 1)
+  node.connect(viewer)
+  viewer.onaudioprocess = function(e){
+    console.log(e.inputBuffer.getChannelData(0)[0])
+  }
+  window.viewers = window.viewers || []
+  window.viewers.push(viewer)
+  viewer.connect(node.context.destination)
 }
 
 function noteGainRolloff(a, b){
