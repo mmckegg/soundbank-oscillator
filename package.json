@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "Oscillator AudioNode source extended with automatable amplitude and midi note params.",
   "main": "index.js",
-  "dependencies": {
-    "audio-voltage": "^1.0.0"
-  },
   "devDependencies": {
     "beefy": "^2.1.1"
   },

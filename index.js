@@ -1,4 +1,3 @@
-var AudioVoltage = require('audio-voltage')
 var rolloff = generateRolloff()
 
 module.exports = function(audioContext){
@@ -9,13 +8,14 @@ module.exports = function(audioContext){
   oscillator.connect(rolloffGain)
   rolloffGain.connect(node)
 
+  var voltage = flatten(oscillator)
 
   // note param input
-  var midiVoltage = AudioVoltage(audioContext)
+  var midiVoltage = scale(voltage)
   midiVoltage.gain.value = 69 // set base note (440hz middle A)
 
   // normalize to 0
-  var offset = AudioVoltage(audioContext)
+  var offset = scale(voltage)
   offset.gain.value = -69
   midiVoltage.connect(offset.gain)
 
@@ -69,6 +69,20 @@ function applyRolloff(midiVoltage, target){
   scale.connect(shape)
 
   shape.connect(target)
+}
+
+var flat = new Float32Array([1,1])
+function flatten(node){
+  var shaper = node.context.createWaveShaper()
+  shaper.curve = flat
+  node.connect(shaper)
+  return shaper
+}
+
+function scale(node){
+  var gain = node.context.createGain()
+  node.connect(gain)
+  return gain
 }
 
 function generateRolloff(){
