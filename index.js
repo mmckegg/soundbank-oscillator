@@ -1,6 +1,8 @@
 var rolloff = generateRolloff()
 
-module.exports = function(audioContext){
+module.exports = Oscillator
+
+function Oscillator(audioContext){
   var node = audioContext.createGain()
   var oscillator = audioContext.createOscillator()
   var rolloffGain = audioContext.createGain()
